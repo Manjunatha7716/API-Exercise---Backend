@@ -1,0 +1,39 @@
+// Fetch Posts for a given tenant_id
+const pool = require('../config/dbConfig');
+
+exports.getPosts = async (req, res) => {
+    const { tenant_id } = req.params;
+
+    try {
+        const result = await pool.query(`
+            SELECT p.id, c.content_url, pr.product_name
+            FROM engagement_post p
+            JOIN engagement_post_content c ON p.id = c.post_id
+            JOIN engagement_post_product_mapping pm ON p.id = pm.post_id
+            JOIN engagement_post_product pr ON pm.product_id = pr.id
+            WHERE p.tenant_id = $1
+        `, [tenant_id]);
+
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Something went wrong' });
+    }
+};
+
+
+// API to Create New Product
+exports.createProduct = async (req, res) => {
+    const { product_name, product_image, sku } = req.body;
+    try {
+        const result = await pool.query(`
+            INSERT INTO engagement_post_product (product_name, product_image, sku)
+            VALUES ($1, $2, $3) RETURNING *;
+        `, [product_name, product_image, sku]);
+
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Something went wrong' });
+    }
+};
