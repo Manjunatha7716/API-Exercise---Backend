@@ -1,0 +1,45 @@
+SQL Queries for Table Creation
+-- Engagement Post Table
+CREATE TABLE engagement_post (
+    id SERIAL PRIMARY KEY,
+    tenant_id INTEGER,
+    post_type VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Engagement Post Content Table
+CREATE TABLE engagement_post_content (
+    id SERIAL PRIMARY KEY,
+    post_id INTEGER REFERENCES engagement_post(id),
+    content_url TEXT,
+    story_id INTEGER
+);
+
+-- Engagement Post Product Mapping Table
+CREATE TABLE engagement_post_product_mapping (
+    id SERIAL PRIMARY KEY,
+    post_id INTEGER REFERENCES engagement_post(id),
+    product_id INTEGER
+);
+
+-- Engagement Post Product Table
+CREATE TABLE engagement_post_product (
+    id SERIAL PRIMARY KEY,
+    product_name VARCHAR(255),
+    product_image TEXT,
+    sku VARCHAR(50)
+);
+
+-- Collection Table
+CREATE TABLE collection (
+    id SERIAL PRIMARY KEY,
+    collection_name VARCHAR(255)
+);
+
+-- Engagement Post Collection Table
+CREATE TABLE engagement_post_collection (
+    id SERIAL PRIMARY KEY,
+    post_id INTEGER REFERENCES engagement_post(id),
+    collection_id INTEGER REFERENCES collection(id),
+    duration_in_seconds INTEGER
+);
